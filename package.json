@@ -1,0 +1,39 @@
+{
+  "name": "webpack-common-use",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "webpack": "webpack",
+    "server": "webpack-dev-server --open"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://jonnzer@github.com/jonnzer/webpack-common-use.git"
+  },
+  "keywords": [
+    "webpack"
+  ],
+  "author": "jonnzer",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jonnzer/webpack-common-use/issues"
+  },
+  "homepage": "https://github.com/jonnzer/webpack-common-use#readme",
+  "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-loader": "^7.1.5",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-react": "^6.24.1",
+    "css-loader": "^1.0.0",
+    "style-loader": "^0.23.0",
+    "webpack": "^4.17.2",
+    "webpack-cli": "^3.1.0",
+    "webpack-dev-server": "^3.1.8"
+  },
+  "dependencies": {
+    "react": "^16.5.0",
+    "react-dom": "^16.5.0"
+  }
+}
