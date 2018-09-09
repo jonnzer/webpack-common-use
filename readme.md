@@ -13,9 +13,14 @@ babel-core babel-loader babel-preset-env babel-preset-react
 ```
 
 ```
-    style-loader css-loader 编译css
-    css-loader使你能够使用类似@import 和 url(...)的方法实现 require()的功能,
-    style-loader将所有的计算后的样式加入页面中，二者组合在一起使你能够把样式表嵌入webpack打包后的JS文件中
-    PostCSS 来为CSS代码自动添加适应不同浏览器的CSS前缀。
-    autoprefixer
+style-loader css-loader 编译css
+css-loader使你能够使用类似@import 和 url(...)的方法实现 require()的功能,
+style-loader将所有的计算后的样式加入页面中，二者组合在一起使你能够把样式表嵌入webpack打包后的JS文件中
+PostCSS 来为CSS代码自动添加适应不同浏览器的CSS前缀。
+autoprefixer
+```
+
+```
+HtmlWebpackPlugin
+这个插件的作用是依据一个简单的index.html模板，生成一个自动引用你打包后的JS文件的新index.html。这在每次生成的js文件名称不同时非常有用（比如添加了hash值）。
 ```
