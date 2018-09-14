@@ -1,53 +1,130 @@
-const webpack = require('webpack');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const CleanWebpackPlugin = require('clean-webpack-plugin')
+/**
+ * Created by Administrator on 2016/9/18.
+ */
 
-module.exports = {
-    entry:  __dirname + "/app/main.js",//已多次提及的唯一入口文件
-    output: {
-        path: __dirname + "/build",//打包后的文件存放的地方
-        filename: "bundle-[hash].js"//打包后输出文件的文件名
-    },
-    devtool: "eval-source-map",
-    devServer: {
-        contentBase: "./public",
-        inline: true
-    },
-    module: {
-        rules: [
-            {
-                test: /(\.jsx|\.js)$/,
-                use: {
-                    loader: "babel-loader"
+const webpack = require("webpack");
+const os = require("os");
+const devConf = require("./hdx-dev-conf");
+const path = require('path');
+
+//配置默认文件
+let entry = devConf.webpack.entry ? devConf.webpack.entry : {
+};
+
+const entryKeyList = Object.keys(entry);
+const chunkFilename = devConf.webpack.chunkFilename?devConf.webpack.chunkFilename:'[id]-chunk.js';
+const publicPath = devConf.webpack.publicPath?devConf.webpack.publicPath:'/Content/v2.0/dist/js';
+let plugins =[];
+
+module.exports = function (ops = {}) {
+
+    let webpackConf = {
+        entry,
+        externals: {
+            "jquery": "jQuery",
+            "zepto": "Zepto",
+            "@": "dev",
+        },
+        output: {
+            filename: "[name]/[name].js",
+            chunkFilename: chunkFilename,
+            path: path.resolve(__dirname, 'dist/js'),
+            publicPath: publicPath,
+        },
+        watch: true,
+        module: {
+            rules: [
+                // ...([createLintingRule()]),
+
+                {
+                    test: /\.js$/,
+                    use: [
+                        'babel-loader',
+                        {
+                            loader: 'eslint-loader',
+                            options: {
+                                emitWarning: true,
+                                emitError: true,
+                                failOnError: true
+                            }
+                        },
+                    ],
+                    exclude: /node_modules/
                 },
-                exclude: /node_modules/
-            },
-            {
-                test: /\.css$/,
-                use: [
-                    {
-                        loader: "style-loader"
-                    },
-                    {
-                        loader: "css-loader",
-                        options: {
-                            modules: true,
-                            localIdentName: '[name]__[local]--[hash:base64:5]' // 指定css的类名格式
-                        }
-                    }
-                ]
+                {
+                    test: /\.css$/, use: ["style-loader","css-loader"]
+                },
+                {
+                    test: /\.(png|jpg)$/,
+                    loader: 'url-loader?limit=8192'
+                },
+                {
+                    test: /\.vue$/,
+                    use:[
+                        {
+                            loader: 'vue-loader',
+                            options: {
+                                cssSourceMap:false,
+                                transformToRequire:{},
+                            },
+                        },
+                        {
+                            loader: 'eslint-loader',
+                            options: {
+                                emitWarning: true,
+                                emitError: true,
+                                failOnError: true,
+
+                            }
+                        },
+                    ],
+                    exclude: /node_modules/
+                },
+            ],
+        },
+        // devServer: {
+        //     proxy: { // proxy URLs to backend development server
+        //         '/api': 'http://localhost:3000'
+        //     },
+        //     contentBase: path.join(__dirname), // boolean | string | array, static file location
+        //     compress: true, // enable gzip compression
+        //     hot: true, // hot module replacement. Depends on HotModuleReplacementPlugin
+        //     https: false, // true for self-signed, object for cert authority
+        //     noInfo: false,
+        //     watchOptions: {
+        //         poll: true,
+        //         ignored: ['/node_modules/','./dev/sass/**/*.*'],
+        //         progress: true,
+        //     },
+        //     // ...
+        // },
+        plugins: plugins,
+        // devtool:'source-map'
+        devtool: 'eval-source-map',
+    };
+
+    if (ops.env == "production"||process.env.NODE_ENV == 'production') {
+        plugins.push(new webpack.optimize.UglifyJsPlugin({
+            parallel: true,
+            cache: true,
+            sourceMap: true,
+            compress: {
+                warnings: false,
+                pure_funcs: [ 'console.log' ]
             }
-        ]
-    },
-    plugins: [
-        new webpack.BannerPlugin('jonnzer 出品，翻版必究'),
-        new HtmlWebpackPlugin({
-            template: __dirname + "/app/index.tmpl.html"//new 一个这个插件的实例，并传入相关的参数
-        }),
-        new CleanWebpackPlugin('build/*.*', {
-            root: __dirname,
-            verbose: true,
-            dry: false
-        })
-    ]
-}
+        }));
+        plugins.push(new webpack.DefinePlugin({
+            'process.env': {
+                NODE_ENV: '"production"'
+            }
+        }));
+
+        webpackConf['devtool'] = 'source-map';//开发模式生成sourcemap文件
+    }
+
+
+    return webpackConf;
+};
+
+
+
